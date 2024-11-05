@@ -17,11 +17,15 @@ const validationDir = path.join(modelDir, 'validations');
 const files = [
     {
         path: path.join(modelDir, `${modelName}.model.ts`),
-        content: `// ${modelName}.model.ts\n\nimport { Schema, model, Document } from 'mongoose';\n\ninterface I${capitalize(modelName)} extends Document {\n  // Define your schema properties here\n}\n\nconst ${modelName}Schema = new Schema<I${capitalize(modelName)}>({\n  // Define schema structure here\n});\n\nexport default model<I${capitalize(modelName)}>('${capitalize(modelName)}', ${modelName}Schema);\n`
+        content: `// ${modelName}.model.ts\n\nimport { Schema, model, Document } from 'mongoose';\n\ninterface T${capitalize(modelName)} extends Document {\n  // Define your schema properties here\n}\n\nconst ${modelName}Schema = new Schema<I${capitalize(modelName)}>({\n  // Define schema structure here\n});\n\nexport const ${capitalize(modelName)}Model = model<T${capitalize(modelName)}>('${capitalize(modelName)}', ${modelName}Schema);\n`
     },
     {
         path: path.join(interfaceDir, `${modelName}.interface.ts`),
-        content: `// ${modelName}.interface.ts\n\nexport interface I${capitalize(modelName)} {\n  // Define your interface properties here\n}\n`
+        content: `// ${modelName}.interface.ts\n
+        
+        import { Document } from "mongoose";
+
+        \nexport interface T${capitalize(modelName)} extends Document{\n  // Define your interface properties here\n}\n`
     },
     {
         path: path.join(validationDir, `${modelName}.validation.ts`),

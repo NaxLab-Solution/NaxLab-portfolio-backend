@@ -1,9 +1,9 @@
-import express from 'express';
+import  { Router } from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { memberValidationSchema } from '../../model/validations/member.validation';
 import { MemberControllers } from './member.controller';
 import upload from '../../utils/multer';
-const member = express.Router();
+const member = Router();
 
 //get by id
 member.get('/:id', MemberControllers.GetMemberById)

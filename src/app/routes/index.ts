@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { memberRoute } from '../controllers/member/member.route';
+import { ProjectRoutes } from '../controllers/project/project.route';
 const router = Router();
 
 const moduleRoutes = [
@@ -7,6 +8,10 @@ const moduleRoutes = [
   {
     path: '/member',
     route: memberRoute,
+  },
+  {
+    path: '/project',
+    route: ProjectRoutes,
   }
 ];
 
