@@ -32,9 +32,15 @@ const GetMembers:RequestHandler = catchAsync(async (req, res, next)=>{
           data: member,
         })
      })
+
      //create
 const CreateMember:RequestHandler =  catchAsync(async (req, res, next)=>{
-    const member = await _memberRepository.create(req.body)
+    const {name} = req.body
+    if(await _memberRepository.findOne({name})) return next(new ErrorHandler(`Duplicate username`, 400))
+    //convert base64 to buffer for avatar
+    let base64 = req.file ? req.file.buffer.toString('base64'): undefined; 
+    const member = await _memberRepository.create({...req.body, avatar:base64 })
+    
     if(!member)
     return next( new ErrorHandler('Invalid entity', 400))
     sendResponse(res, {
@@ -44,6 +50,30 @@ const CreateMember:RequestHandler =  catchAsync(async (req, res, next)=>{
         data: member,
     })
     })
+
     //update
+    const UpdateMember:RequestHandler = catchAsync(async(req, res, next)=>{
+        const {id} = req.params
+        const member = await _memberRepository.update(id, req.body)
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Member updated successfully',
+        data: member,
+    })
+    })
+    
     //delete
-export const MemberControllers = {CreateMember, GetMemberById, GetMembers}
+    const DeleteMember:RequestHandler = catchAsync(async(req, res, next)=>{
+        const {id} = req.params
+        const member = await _memberRepository.delete(id);
+        if(!member)return next(new ErrorHandler(`Error deleting member`, 400))
+            sendResponse(res, {
+                success: true,
+                statusCode: 200,
+                message: 'Member deleted successfully',
+                data: member,
+            })
+    
+    })
+export const MemberControllers = {CreateMember,UpdateMember,DeleteMember, GetMemberById, GetMembers}
