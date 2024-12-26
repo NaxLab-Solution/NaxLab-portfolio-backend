@@ -7,7 +7,7 @@ export interface TProject extends Document{
 
     title:string,
     description:string,
-    image:string[],
+    images:string[],
     category:ObjectId, 
     tag:ObjectId,
   

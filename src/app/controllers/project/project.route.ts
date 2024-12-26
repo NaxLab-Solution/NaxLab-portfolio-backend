@@ -15,8 +15,8 @@ project.get('/:id', ProjectControllers.GetProjectById);
 
 // Create a new project 
 project.post(
-    '/',
-    upload.array('image'), // Upload multiple images
+    '/create',
+    upload.array('images'), // Upload multiple images
     validateRequest(projectValidationSchema),
     ProjectControllers.CreateProject
 );

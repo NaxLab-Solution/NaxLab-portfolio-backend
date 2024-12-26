@@ -14,9 +14,13 @@ const _projectRepository = new Repository(ProjectModel);
 const GetProjects: RequestHandler = catchAsync(async (req, res, next) => {
     const projects = await _projectRepository.findAll();
     if (!projects || projects.length === 0) {
-        return next(new ErrorHandler('No projects found', 404));
+        sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: 'No project founds',
+            data: projects,
+        });
     }
-
     sendResponse(res, {
         success: true,
         statusCode: 200,
@@ -50,7 +54,11 @@ const CreateProject: RequestHandler = catchAsync(async (req, res, next) => {
     if (req.files && Array.isArray(req.files)) {
         images = req.files.map((file: Express.Multer.File) => file.buffer.toString('base64'));
     }
-    const newProject = await _projectRepository.create({...req.body, image:images});
+    const {tag} = req.body
+    if(!Array.isArray(tag)){
+        return next(new ErrorHandler("Tags needs to be an array", 400));
+    }
+    const newProject = await _projectRepository.create({...req.body, images:images});
 
     if (!newProject) {
         return next(new ErrorHandler('Failed to create project', 400));
