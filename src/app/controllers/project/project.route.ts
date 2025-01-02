@@ -16,14 +16,22 @@ project.get('/:id', ProjectControllers.GetProjectById);
 // Create a new project 
 project.post(
     '/create',
-    upload.array('images'), // Upload multiple images
+    upload.fields([
+        {name:"primary_image", maxCount:1},
+        {name:"secondary_image", maxCount:1},
+    ]), // Upload multiple images
     validateRequest(projectValidationSchema),
     ProjectControllers.CreateProject
 );
 
 // Update an existing project 
 project.put(
-    '/:id',validateRequest(projectValidationSchema),
+    '/:id',
+    upload.fields([
+        {name:"primary_image", maxCount:1},
+        {name:"secondary_image", maxCount:1},
+    ]), // Upload multiple images
+    validateRequest(projectValidationSchema),
     ProjectControllers.UpdateProject
 );
 

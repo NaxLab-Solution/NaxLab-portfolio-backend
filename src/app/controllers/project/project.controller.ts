@@ -48,17 +48,22 @@ const GetProjectById: RequestHandler = catchAsync(async (req, res, next) => {
 // Create a new project
 const CreateProject: RequestHandler = catchAsync(async (req, res, next) => {
     
-    let images: string[] = [];
+    let primary_image: string = "";
+    let secondary_image: string = "";
 
     // Check if images were uploaded and process them as base64 strings
-    if (req.files && Array.isArray(req.files)) {
-        images = req.files.map((file: Express.Multer.File) => file.buffer.toString('base64'));
+    if (req.files) {
+        // images = req.files.map((file: Express.Multer.File) => file.buffer.toString('base64'));
+        primary_image = (req.files as { [fieldname: string]: Express.Multer.File[] })["primary_image"][0].buffer.toString('base64');
+        secondary_image = (req.files as { [fieldname: string]: Express.Multer.File[] })["secondary_image"][0].buffer.toString('base64');
+        
     }
     const {tag} = req.body
     if(!Array.isArray(tag)){
         return next(new ErrorHandler("Tags needs to be an array", 400));
     }
-    const newProject = await _projectRepository.create({...req.body, images:images});
+    const newProject = await _projectRepository.create({...req.body, primary_image:primary_image, secondary_image:secondary_image});
+    // const newProject = req.files;
 
     if (!newProject) {
         return next(new ErrorHandler('Failed to create project', 400));
@@ -75,6 +80,23 @@ const CreateProject: RequestHandler = catchAsync(async (req, res, next) => {
 // Update project by ID
 const UpdateProject: RequestHandler = catchAsync(async (req, res, next) => {
     const { id } = req.params;
+    let primary_image: string = "";
+    let secondary_image: string = "";
+    if (req.files) {
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+        if (files["primary_image"] && files["primary_image"].length > 0) {
+            primary_image = files["primary_image"][0].buffer.toString('base64');
+        }
+        if (files["secondary_image"] && files["secondary_image"].length > 0) {
+            secondary_image = files["secondary_image"][0].buffer.toString('base64');
+        }
+    }
+
+    // Only include the images in req.body if they are defined
+    if (primary_image) req.body["primary_image"] = primary_image;
+    if (secondary_image) req.body["secondary_image"] = secondary_image;
+
     const updatedProject = await _projectRepository.update(id, req.body);
 
     if (!updatedProject) {

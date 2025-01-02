@@ -9,6 +9,14 @@ const _memberRepository = new Repository(MemberModel)
 //get all
 const GetMembers:RequestHandler = catchAsync(async (req, res, next)=>{
     const members = await _memberRepository.findAll();
+    if (!members || members.length === 0) {
+        sendResponse(res, {
+          success: true,
+          statusCode: 200,
+          message: 'No members found',
+          data: members,
+        });
+      }
     sendResponse(res, {
         success: true,
         statusCode: 200,
@@ -20,6 +28,10 @@ const GetMembers:RequestHandler = catchAsync(async (req, res, next)=>{
     const GetMemberById:RequestHandler = catchAsync(async (req, res, next)=>{
         const {id} = req.params
         const member = await _memberRepository.findById(id)
+
+        if (!member) {
+            return next(new ErrorHandler('member not found', 404));
+          }
         sendResponse(res, {
           success: true,
           statusCode: 200,

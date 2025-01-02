@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {   "g:c": "ts-node src/scripts/ControllerGenerator.ts",    "g:m": "ts-node src/scripts/ModelGenerator.ts",
+  "scripts": {   
+    "g:c": "ts-node src/scripts/ControllerGenerator.ts",    "g:m": "ts-node src/scripts/ModelGenerator.ts",
     "start:prod": "node ./dist/server.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
