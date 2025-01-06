@@ -12,7 +12,7 @@ const _projectRepository = new Repository(ProjectModel);
 
 // Get all projects
 const GetProjects: RequestHandler = catchAsync(async (req, res, next) => {
-    const projects = await _projectRepository.findAll();
+    const projects = await _projectRepository.findAll({}, 'tag');
     if (!projects || projects.length === 0) {
         sendResponse(res, {
             success: true,

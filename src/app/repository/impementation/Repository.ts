@@ -1,4 +1,4 @@
-import { Model, Document, FilterQuery, UpdateQuery } from 'mongoose';
+import { Model, Document, FilterQuery, UpdateQuery, PopulateOptions } from 'mongoose';
 import { IRepository } from '../IRepository';
 import ErrorHandler from '../../utils/ErrorHandler';
 
@@ -26,12 +26,19 @@ export class Repository<T extends Document> implements IRepository<T> {
     if (!query) throw new ErrorHandler(`Internal error occured`, 400);
     return this.model.findOne(query).exec();
   }
-  findAll(): Promise<T[] | null> {
-    const entities:any = this.model.find().exec();
-    if(entities.length == 0 || !entities){
-      throw new ErrorHandler("No entities were found", 404);
+  findAll(query: FilterQuery<T> = {}, populateOptions?: PopulateOptions | string): Promise<T[] | null> {
+    const queryChain = this.model.find(query);
+
+    if (populateOptions) {
+      queryChain.populate(typeof populateOptions === 'string' ? [populateOptions] : populateOptions); // Add population
     }
-    return entities;
+
+    return queryChain.exec().then((entities: any) => {
+      if (entities.length === 0 || !entities) {
+        throw new ErrorHandler("No entities were found", 404);
+      }
+      return entities;
+    });
   }
 
   async update(id: string, entity: UpdateQuery<T>): Promise<T | null> {
