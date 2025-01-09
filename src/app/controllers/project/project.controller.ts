@@ -12,7 +12,8 @@ const _projectRepository = new Repository(ProjectModel);
 
 // Get all projects
 const GetProjects: RequestHandler = catchAsync(async (req, res, next) => {
-    const projects = await _projectRepository.findAll({}, 'tag');
+    const projects = await _projectRepository.findAll({}, ['tag', 'category']); 
+
     if (!projects || projects.length === 0) {
         sendResponse(res, {
             success: true,
@@ -21,6 +22,7 @@ const GetProjects: RequestHandler = catchAsync(async (req, res, next) => {
             data: projects,
         });
     }
+
     sendResponse(res, {
         success: true,
         statusCode: 200,

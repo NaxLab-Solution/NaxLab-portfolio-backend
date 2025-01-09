@@ -19,28 +19,27 @@ export class Repository<T extends Document> implements IRepository<T> {
   findById(id: string): Promise<T | null> {
     if (!id) throw new ErrorHandler(`Internal error occured`, 400);
     const entity = this.model.findById(id).exec()
-    if(!entity)  throw new ErrorHandler("No entity found", 404);
+    if(!entity) throw new ErrorHandler("No entity found", 404);
     return entity;
   }
   findOne(query: FilterQuery<T>): Promise<T | null> {
     if (!query) throw new ErrorHandler(`Internal error occured`, 400);
     return this.model.findOne(query).exec();
   }
-  findAll(query: FilterQuery<T> = {}, populateOptions?: PopulateOptions | string): Promise<T[] | null> {
+  findAll(query: FilterQuery<T> = {}, populateOptions?: PopulateOptions | string | (PopulateOptions | string)[]): Promise<T[] | null> {
     const queryChain = this.model.find(query);
 
     if (populateOptions) {
-      queryChain.populate(typeof populateOptions === 'string' ? [populateOptions] : populateOptions); // Add population
+            queryChain.populate(Array.isArray(populateOptions) ? populateOptions : [populateOptions]);
     }
 
     return queryChain.exec().then((entities: any) => {
-      if (entities.length === 0 || !entities) {
-        throw new ErrorHandler("No entities were found", 404);
-      }
-      return entities;
+        if (entities.length === 0 || !entities) {
+            throw new ErrorHandler("No entities were found", 404);
+        }
+        return entities;
     });
-  }
-
+}
   async update(id: string, entity: UpdateQuery<T>): Promise<T | null> {
     if (!id) throw new ErrorHandler('Entity not found', 400);
     if (!entity) throw new ErrorHandler('Invalid entity', 400);
